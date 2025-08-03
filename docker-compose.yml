@@ -18,11 +18,11 @@ services:
         - "traefik.http.routers.spafa.tls.certresolver=le"
         - "traefik.http.services.spafa.loadbalancer.server.port=8501"
     environment:
-      - OPENAI_API_KEY: "${OPENAI_API_KEY}"
-      - SERPER_API_KEY: "${SERPER_API_KEY}"
-      - OPENAI_MODEL: "gpt-4o"
-      - TEMPERATURE: "0.1"
-      - MAX_TOKENS: "2000"
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      SERPER_API_KEY: "${SERPER_API_KEY}"
+      OPENAI_MODEL: "gpt-4o"
+      TEMPERATURE: "0.1"
+      MAX_TOKENS: "2000"
     networks:
       - traefik-public
 

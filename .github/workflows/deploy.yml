@@ -27,7 +27,4 @@ jobs:
     - name: Deploy to Docker Swarm
       run: |
         scp docker-compose.yml ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/spafa-deploy.yml
-        ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} "\
-          export OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}' && \
-          export SERPER_API_KEY='${{ secrets.SERPER_API_KEY }}' && \
-          docker stack deploy -c ~/spafa-deploy.yml spafa"
+        ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} "export OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}' && export SERPER_API_KEY='${{ secrets.SERPER_API_KEY }}' && docker stack deploy -c ~/spafa-deploy.yml spafa"

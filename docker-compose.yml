@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  spafa:
+    image: registry.gaeni.org/spafa/ai:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-public"
+        - "traefik.constraint-label=traefik-public"
+        - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.spafa.rule=Host(`spafa.gaeni.org`)"
+        - "traefik.http.routers.spafa.entrypoints=https"
+        - "traefik.http.routers.spafa.tls=true"
+        - "traefik.http.routers.spafa.tls.certresolver=le"
+        - "traefik.http.services.spafa.loadbalancer.server.port=8501"
+    environment:
+      - OPENAI_API_KEY: "${OPENAI_API_KEY}”
+      - SERPER_API_KEY: “${SERPER_API_KEY}”
+      - OPENAI_MODEL: "gpt-4o"
+      - TEMPERATURE: "0.1"
+      - MAX_TOKENS: "2000"
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true

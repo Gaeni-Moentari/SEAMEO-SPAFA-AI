@@ -1,0 +1,33 @@
+name: Deploy to server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Build Docker image
+      run: |
+        docker build -t registry.gaeni.org/spafa/ai:latest .
+        docker push registry.gaeni.org/spafa/ai:latest
+
+    - name: Deploy to Docker Swarm
+      run: |
+        scp docker-compose.yml ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/spafa-deploy.yml
+        ssh ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} "\
+        export OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}' && \
+        export SERPER_API_KEY='${{ secrets.SERPER_API_KEY }}' && \
+        docker stack deploy -c ~/spafa-deploy.yml spafa"
